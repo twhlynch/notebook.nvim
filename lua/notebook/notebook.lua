@@ -292,6 +292,8 @@ end
 --- open the current cells images in the system image viewer
 --- @param state Notebook.Sessions.session
 function M.gx_handler(state)
+	local options = require("notebook.options").get()
+
 	-- get cell containing cursor
 	local cell_idx = M.get_current_cell_index(state)
 
@@ -302,7 +304,9 @@ function M.gx_handler(state)
 
 	-- check it has output
 	if not cell_idx or not state.output_store[cell_idx] then
-		vim.cmd("normal! gx")
+		if options.keys.open_image == "gx" then
+			vim.cmd("normal! gx")
+		end
 		return
 	end
 
@@ -325,7 +329,7 @@ function M.gx_handler(state)
 	end
 
 	-- fallback to normal gx
-	if not handled then
+	if not handled and options.keys.open_image == "gx" then
 		vim.cmd("normal! gx")
 	end
 end
