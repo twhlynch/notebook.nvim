@@ -107,7 +107,7 @@ function M.insert_cell(state, cell_type)
 	end
 
 	-- insert mode eol
-	vim.cmd("startinsert!")
+	vim.cmd(options.new_cell_cmd)
 end
 
 --- remove the current cell
