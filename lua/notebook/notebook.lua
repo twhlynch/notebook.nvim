@@ -599,19 +599,33 @@ function M.dump_images(state)
 		vim.fn.mkdir(directory)
 	end
 
+	-- count images to format with right amount of leading zeros
+	local figure_count = 0
+	for _, cell_outputs in pairs(state.output_store or {}) do
+		for _, out in ipairs(cell_outputs) do
+			local has_image_data = out.data and (out.data["image/png"] or out.data["image/jpeg"])
+			if has_image_data then
+				figure_count = figure_count + 1
+			end
+		end
+	end
+
+	-- at least one leading zero
+	local padding = math.max(#tostring(figure_count), 2)
+
 	-- save images
-	local figure_count = 1
+	local figure_index = 1
 
 	for _, cell_outputs in ipairs(state.output_store or {}) do
 		for _, out in ipairs(cell_outputs) do
 			local img_data = out.data and (out.data["image/png"] or out.data["image/jpeg"])
 			if img_data then
 				local ext = out.data["image/png"] and "png" or "jpg"
-				local dest_path = string.format("%s/figure_%d.%s", directory, figure_count, ext)
+				local dest_path = string.format("%s/figure_%0" .. padding .. "d.%s", directory, figure_index, ext)
 
 				utils.write_base64_file(img_data, dest_path)
 
-				figure_count = figure_count + 1
+				figure_index = figure_index + 1
 			end
 		end
 	end
