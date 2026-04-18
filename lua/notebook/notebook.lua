@@ -586,8 +586,7 @@ end
 --- save all images to `/figures`
 --- @param state Notebook.Sessions.session
 function M.dump_images(state)
-	local options = require("notebook.options").get()
-	local choice = vim.fn.confirm(options.strings.images_prompt, "&No\n&Yes", 1)
+	local choice = vim.fn.confirm(constants.strings.images_prompt, "&No\n&Yes", 1)
 	if choice ~= 2 then
 		return
 	end
@@ -617,7 +616,7 @@ function M.dump_images(state)
 		end
 	end
 
-	vim.notify(vim.fn.printf(options.strings.saved_images, figure_count - 1))
+	vim.notify(vim.fn.printf(constants.strings.saved_images, figure_index - 1))
 end
 
 --- setup a file
