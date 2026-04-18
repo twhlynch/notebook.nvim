@@ -446,14 +446,17 @@ function M.save(state)
 		end
 
 		-- append cell info with content
-		table.insert(json_cells, {
+		local cell_data = {
 			cell_type = cell.type,
 			metadata = cell.metadata or vim.empty_dict(),
-			outputs = clean_outputs,
 			source = formatted_src,
-			execution_count = vim.NIL,
 			id = tostring(i - 1),
-		})
+		}
+		if cell.type == "code" then
+			cell_data.outputs = clean_outputs
+			cell_data.execution_count = vim.NIL
+		end
+		table.insert(json_cells, cell_data)
 	end
 
 	-- update raw cells
