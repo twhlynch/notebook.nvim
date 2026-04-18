@@ -1,0 +1,37 @@
+# black formatter
+[tool.black]
+line-length = 88
+target-version = ['py313']
+
+# ruff linter
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+	"F",    # pyflakes
+	"UP",   # pyupgrade
+	"B",    # bugbear
+	"SIM",  # simplify
+	"ANN",  # annotations
+	"A",    # builtins
+	"C4",   # comprehensions
+	"PIE",  # misc
+	"RET",  # return
+	"FLY",  # fstrings
+	"PERF", # performance
+	"FURB", # refurb
+]
+
+# basedpyright lsp
+[tool.pyright]
+typeCheckingMode = "all"
+
+reportMissingImports = true
+reportUnusedVariable = true
+reportUnusedImport = true
+
+reportUnknownMemberType = false
+reportUnknownVariableType = false
