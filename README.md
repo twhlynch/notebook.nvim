@@ -71,8 +71,12 @@ return {
 			new_cell      = { "# " },
 			new_code_cell = { "# " },
 
-			output_border    = "┃   ",
-			cell_border      = "─",
+			output_border  = "┃   ",
+			cell_border    = "─",
+			code_label     = " λ code ",
+			markdown_label = " ¶ markdown ",
+			output_label   = " ⇒ output ",
+
 			cell_executed    = "[ ✓ Done ]",
 			cell_running     = "[ Running... ]",
 			truncated_output = "<Enter> %s more lines",

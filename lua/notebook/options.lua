@@ -56,9 +56,13 @@ local M = {}
 --- new cell content
 --- @field new_cell string[] list of strings to insert into new markdown cells
 --- @field new_code_cell string[] list of strings to insert into new code cells
---- structure and state info
+--- structure
 --- @field output_border string string to use as the border left of cell output
 --- @field cell_border string character used for cell borders
+--- @field code_label string label placed in borders above code cells
+--- @field markdown_label string label placed in borders above markdown cells
+--- @field output_label string label placed in borders above output
+--- state info
 --- @field cell_executed string string to show when a cell finishes running
 --- @field cell_running string string to show when a cell is running
 --- @field truncated_output string string to show when output is truncated %s for line count
@@ -113,8 +117,12 @@ M.options = {
 		new_cell      = { "# " },
 		new_code_cell = { "# " },
 
-		output_border    = "┃   ",
-		cell_border      = "─",
+		output_border  = "┃   ",
+		cell_border    = "─",
+		code_label     = " λ code ",
+		markdown_label = " ¶ markdown ",
+		output_label   = " ⇒ output ",
+
 		cell_executed    = "[ ✓ Done ]",
 		cell_running     = "[ Running... ]",
 		truncated_output = "<Enter> %s more lines",

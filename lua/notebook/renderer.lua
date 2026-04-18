@@ -105,24 +105,31 @@ function M.insert_virtual_line(tble, type, text)
 end
 
 --- get a string for a border the width of the terminal
+--- @param label? string optional label in the border
 --- @return string
-function M.border_text()
+function M.border_text(label)
 	local options = require("notebook.options").get()
 
 	local width = vim.api.nvim_get_option_value("columns", {})
-	local text = string.rep(options.strings.cell_border, width)
 
-	return text
+	if label then
+		local prefix = string.rep(options.strings.cell_border, 2) .. label
+		local count = width - #prefix
+		return prefix .. string.rep(options.strings.cell_border, count)
+	else
+		return string.rep(options.strings.cell_border, width)
+	end
 end
 
 --- insert a border separator extmark
 --- @param state Notebook.Sessions.session
 --- @param line integer line number
 --- @param ns integer namespace id
-function M.insert_separator(state, line, ns)
+--- @param label? string default text label
+function M.insert_separator(state, line, ns, label)
 	local options = require("notebook.options").get()
 	vim.api.nvim_buf_set_extmark(state.bufnr, ns, line, 0, {
-		virt_text = { { M.border_text(), options.hl.output } },
+		virt_text = { { M.border_text(label), options.hl.output } },
 		virt_text_pos = "overlay",
 	})
 end
@@ -138,16 +145,27 @@ function M.render_cell(state, i)
 		return
 	end
 
+	local has_cell_gaps = options.cell_gap and options.cell_gap > 0
+
+	-- show label for next cell when no gaps, otherwise dont show it
+	local optional_code_label = (not has_cell_gaps) and options.strings.code_label or nil
+
 	-- borders over """ around markdown
 	if cell.type == "markdown" then
-		M.insert_separator(state, cell.start_line - 1, M.border_ns)
-		M.insert_separator(state, cell.end_line + 1, M.border_ns)
+		M.insert_separator(state, cell.start_line - 1, M.border_ns, options.strings.markdown_label)
+		-- no label if preceding another markdown cell
+		local next_c = state.parsed_cells[i + 1]
+		if next_c and next_c.type == "markdown" then
+			M.insert_separator(state, cell.end_line + 1, M.border_ns)
+		else
+			M.insert_separator(state, cell.end_line + 1, M.border_ns, optional_code_label)
+		end
 	end
 	-- border above code
 	if cell.type == "code" then
 		local next_c = state.parsed_cells[i + 1]
 		if next_c and next_c.type == "code" then
-			M.insert_separator(state, cell.end_line + 1, M.border_ns)
+			M.insert_separator(state, cell.end_line + 1, M.border_ns, optional_code_label)
 		end
 	end
 
@@ -173,7 +191,7 @@ function M.render_cell(state, i)
 		end
 		-- extra border above code cells
 		if cell.type == "code" then
-			table.insert(gap_lines, { { M.border_text(), options.hl.output } })
+			table.insert(gap_lines, { { M.border_text(options.strings.code_label), options.hl.output } })
 		end
 
 		-- insert
@@ -300,7 +318,7 @@ function M.render_cell(state, i)
 	-- add border for any output or images
 	if #virt_lines > 0 or #snacks_images > 0 then
 		-- prepend
-		table.insert(virt_lines, 1, { { M.border_text(), options.hl.output } })
+		table.insert(virt_lines, 1, { { M.border_text(options.strings.output_label), options.hl.output } })
 	end
 
 	-- add extmarks to buffer
