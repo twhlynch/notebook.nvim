@@ -43,6 +43,7 @@ return {
 
 			next_cell          = "]c",
 			previous_cell      = "[c",
+			textobject_cell    = "ic",
 
 			insert_markdown    = "m",
 			insert_code        = "c",

@@ -650,6 +650,24 @@ function M.dump_images(state)
 	vim.notify(vim.fn.printf(constants.strings.saved_images, figure_index - 1))
 end
 
+--- select the current cell
+--- @param state Notebook.Sessions.session
+function M.select_cell(state)
+	local current_idx = M.get_current_cell_index(state)
+
+	if current_idx == 0 then
+		current_idx = 1
+	end
+
+	local cell = state.parsed_cells[current_idx]
+	local start, finish = cell.start_line + 1, cell.end_line + 1
+
+	-- end first so cursor finishes at end
+	vim.fn.setpos("'>", { 0, finish, vim.fn.col({ finish, "$" }), 0 })
+	vim.fn.setpos("'<", { 0, start, 1, 0 })
+	vim.cmd("normal! gv")
+end
+
 --- setup a file
 --- @param args vim.api.keyset.create_autocmd.callback_args
 function M.setup_file(args)
@@ -686,31 +704,32 @@ function M.setup_file(args)
 	M.rerender(state)
 
 	-- keybinds
-	local keymap = function(leader, name, func, ...)
+	local keymap = function(modes, leader, name, func, ...)
 		local vargs = { ... }
 		local key = options.keys[name]
 		local desc = constants.strings[name .. "_desc"]
-		vim.keymap.set("n", (leader and options.keybind_prefix or "") .. key, function()
+		vim.keymap.set(modes, (leader and options.keybind_prefix or "") .. key, function()
 			func(state, unpack(vargs))
 		end, { buf = bufnr, silent = true, desc = desc })
 	end
 
 	-- stylua: ignore start
-	keymap(true,  "run_cell",           M.run_cells, "current"    ) -- running
-	keymap(true,  "run_cells_all",      M.run_cells, "all"        )
-	keymap(true,  "run_cells_up",       M.run_cells, "up"         )
-	keymap(true,  "run_cells_down",     M.run_cells, "down"       )
-	keymap(true,  "clear_all_output",   M.clear_output            ) -- output
-	keymap(true,  "refresh_all_output", M.rerender                )
-	keymap(false, "open_image",         M.gx_handler              ) -- viewing
-	keymap(false, "show_output",        M.open_output             )
-	keymap(false, "next_cell",          M.jump_cell, true         ) -- navigation
-	keymap(false, "previous_cell",      M.jump_cell, false        )
-	keymap(true,  "insert_markdown",    M.insert_cell, "markdown" ) -- editing cells
-	keymap(true,  "insert_code",        M.insert_cell, "code"     )
-	keymap(true,  "remove_cell",        M.remove_cell             )
-	keymap(true,  "split_cell",         M.split_cell              )
-	keymap(true,  "dump_images",        M.dump_images             ) -- utils
+	keymap({ "n" },      true,  "run_cell",           M.run_cells, "current"    ) -- running
+	keymap({ "n" },      true,  "run_cells_all",      M.run_cells, "all"        )
+	keymap({ "n" },      true,  "run_cells_up",       M.run_cells, "up"         )
+	keymap({ "n" },      true,  "run_cells_down",     M.run_cells, "down"       )
+	keymap({ "n" },      true,  "clear_all_output",   M.clear_output            ) -- output
+	keymap({ "n" },      true,  "refresh_all_output", M.rerender                )
+	keymap({ "n" },      false, "open_image",         M.gx_handler              ) -- viewing
+	keymap({ "n" },      false, "show_output",        M.open_output             )
+	keymap({ "n" },      false, "next_cell",          M.jump_cell, true         ) -- navigation
+	keymap({ "n" },      false, "previous_cell",      M.jump_cell, false        )
+	keymap({ "o", "x" }, false, "textobject_cell",    M.select_cell             )
+	keymap({ "n" },      true,  "insert_markdown",    M.insert_cell, "markdown" ) -- editing cells
+	keymap({ "n" },      true,  "insert_code",        M.insert_cell, "code"     )
+	keymap({ "n" },      true,  "remove_cell",        M.remove_cell             )
+	keymap({ "n" },      true,  "split_cell",         M.split_cell              )
+	keymap({ "n" },      true,  "dump_images",        M.dump_images             ) -- utils
 	-- stylua: ignore end
 
 	-- override :w with custom save

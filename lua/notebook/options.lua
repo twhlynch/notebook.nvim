@@ -31,6 +31,7 @@ local M = {}
 --- jumping
 --- @field next_cell string keybind to jump to the next cell
 --- @field previous_cell string keybind to jump to the previous cell
+--- @field textobject_cell string textobject keybind for 'inside cell'
 --- adding cells
 --- @field insert_markdown string keybind to insert a markdown cell under the current cell
 --- @field insert_code string keybind to insert a code cell under the current cell
@@ -82,6 +83,7 @@ M.options = {
 
 		next_cell          = "]c",
 		previous_cell      = "[c",
+		textobject_cell    = "ic",
 
 		insert_markdown    = "m",
 		insert_code        = "c",

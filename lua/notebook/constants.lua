@@ -36,6 +36,7 @@ local M = {
 		open_image_desc         = "Open current cell images",
 		show_output_desc        = "Open current cell output",
 		dump_images_desc        = "Dump all image output to /figures",
+		textobject_cell_desc    = "inside cell",
 	},
 }
 
