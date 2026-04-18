@@ -550,17 +550,6 @@ function M.read_file(state)
 
 	-- set notebook buffer content
 	vim.api.nvim_buf_set_lines(state.bufnr, 0, -1, false, notebook_lines)
-	vim.bo[state.bufnr].modified = false
-	vim.bo[state.bufnr].filetype = "python"
-	vim.bo[state.bufnr].buftype = ""
-	vim.bo[state.bufnr].modifiable = true
-
-	-- trick formatters & lsp into thinking this is a real python file
-	if vim.api.nvim_buf_get_name(state.bufnr) == "" then
-		vim.api.nvim_buf_set_name(state.bufnr, (state.path:gsub("%.ipynb$", ".py")))
-	end
-
-	M.rerender(state)
 end
 
 --- run a range of cells
@@ -675,7 +664,26 @@ function M.setup_file(args)
 	renderer.apply_highlights(vim.api.nvim_get_current_win())
 
 	-- read file content
-	M.read_file(state)
+	if vim.uv.fs_stat(state.path) ~= nil then
+		M.read_file(state)
+		M.parse_buffer(state)
+	else
+		state.raw_json = jupyter.blank_notebook()
+	end
+
+	-- buffer options
+	vim.bo[state.bufnr].modified = false
+	vim.bo[state.bufnr].filetype = "python"
+	vim.bo[state.bufnr].buftype = ""
+	vim.bo[state.bufnr].modifiable = true
+
+	-- trick formatters & lsp into thinking this is a real python file
+	-- disabled for now, maybe make this an option
+	-- if vim.api.nvim_buf_get_name(state.bufnr):find("%.ipynb$") then
+	-- 	vim.api.nvim_buf_set_name(state.bufnr, (state.path:gsub("%.ipynb$", ".py")))
+	-- end
+
+	M.rerender(state)
 
 	-- keybinds
 	local keymap = function(leader, name, func, ...)
