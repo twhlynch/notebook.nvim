@@ -49,6 +49,8 @@ return {
 			insert_code        = "c",
 			split_cell         = "s",
 			remove_cell        = "X",
+			move_cell_up       = "<up>",
+			move_cell_down     = "<down>",
 
 			clear_all_output   = "x",
 			refresh_all_output = "R",

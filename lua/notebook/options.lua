@@ -37,6 +37,8 @@ local M = {}
 --- @field insert_code string keybind to insert a code cell under the current cell
 --- @field split_cell string keybind to split the current cell at the cursor
 --- @field remove_cell string keybind to remove the current cell
+--- @field move_cell_up string keybind to move the current cell up
+--- @field move_cell_down string keybind to move the current cell down
 --- other
 --- @field clear_all_output string keybind to clear all output data
 --- @field refresh_all_output string keybind to rerender in the case of all too common rendering bugs
@@ -89,6 +91,8 @@ M.options = {
 		insert_code        = "c",
 		split_cell         = "s",
 		remove_cell        = "X",
+		move_cell_up       = "<up>",
+		move_cell_down     = "<down>",
 
 		clear_all_output   = "x",
 		refresh_all_output = "R",

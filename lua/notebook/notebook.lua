@@ -225,6 +225,52 @@ function M.split_cell(state)
 	end
 end
 
+--- move the current cell up or down
+--- @param state Notebook.Sessions.session
+--- @param direction "up" | "down"
+function M.move_cell(state, direction)
+	M.parse_buffer(state)
+	local cells = state.parsed_cells
+	local current_idx = M.get_current_cell_index(state)
+
+	if current_idx == 0 then
+		current_idx = 1
+	end
+
+	if not current_idx then
+		return
+	end
+
+	local target_idx = direction == "up" and (current_idx - 1) or (current_idx + 1)
+
+	if target_idx < 1 or target_idx > #cells then
+		return
+	end
+
+	-- swap cells
+	cells[current_idx], cells[target_idx] = cells[target_idx], cells[current_idx]
+	-- swap output_store
+	state.output_store[current_idx], state.output_store[target_idx] = state.output_store[target_idx], state.output_store[current_idx]
+
+	-- swap snacks_images if exists
+	if state.snacks_images then
+		-- clear from ui as they will be re-drawn
+		renderer.clear_images(state, current_idx)
+		renderer.clear_images(state, target_idx)
+		state.snacks_images[current_idx], state.snacks_images[target_idx] = state.snacks_images[target_idx], state.snacks_images[current_idx]
+	end
+
+	-- sync and render
+	sync_buffer(state, cells)
+	M.rerender(state)
+
+	-- move cursor to new position
+	local new_cell = state.parsed_cells[target_idx]
+	if new_cell then
+		vim.api.nvim_win_set_cursor(0, { new_cell.start_line + 1, 0 })
+	end
+end
+
 --- open the current cells output in a floating window
 --- @param state Notebook.Sessions.session
 function M.open_output(state)
@@ -729,6 +775,8 @@ function M.setup_file(args)
 	keymap({ "n" },      true,  "insert_code",        M.insert_cell, "code"     )
 	keymap({ "n" },      true,  "remove_cell",        M.remove_cell             )
 	keymap({ "n" },      true,  "split_cell",         M.split_cell              )
+	keymap({ "n" },      true,  "move_cell_up",       M.move_cell, "up"         )
+	keymap({ "n" },      true,  "move_cell_down",     M.move_cell, "down"       )
 	keymap({ "n" },      true,  "dump_images",        M.dump_images             ) -- utils
 	-- stylua: ignore end
 
