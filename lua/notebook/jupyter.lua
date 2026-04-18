@@ -17,10 +17,14 @@
 --- @field source string[]
 
 --- @class Notebook.Jupyter.Output
---- @field output_type "stream" | "error" | "display_data"
+--- @field output_type "stream" | "error" | "display_data" | "execute_result"
 --- @field text? string | string[]
 --- @field traceback? string | string[]
 --- @field data? Notebook.Jupyter.DisplayData
+--- @field ename? string
+--- @field evalue? string
+--- @field execution_count? integer
+--- @field metadata? table
 
 --- @class Notebook.Jupyter.DisplayData
 --- @field ['text/plain']? string
