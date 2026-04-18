@@ -16,6 +16,7 @@ local M = {
 		no_venv         = "Not using a virtual environment",
 		saved_images    = "Saved %d images",
 		images_prompt   = "Dump images to working directory?",
+		images_warning  = "Are you sure you want to open %d images?",
 
 		-- keybind descriptions
 		-- NOTE: these keys should match the keybind keys in ./options.lua

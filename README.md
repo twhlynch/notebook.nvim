@@ -33,6 +33,7 @@ return {
 		cell_gap = 0,
 		write_output = true,
 		new_cell_cmd = "normal! A\nstartinsert!",
+		image_warn_threshold = 10,
 
 		keys = {
 			run_cell           = "r",

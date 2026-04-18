@@ -302,6 +302,15 @@ function M.gx_handler(state)
 		cell_idx = 1
 	end
 
+	local image_count = M.count_images(state)
+	if image_count >= options.image_warn_threshold then
+		local prompt = string.format(constants.strings.images_warning, image_count)
+		local choice = vim.fn.confirm(prompt, "&No\n&Yes", 1)
+		if choice ~= 2 then
+			return
+		end
+	end
+
 	-- check it has output
 	if not cell_idx or not state.output_store[cell_idx] then
 		if options.keys.open_image == "gx" then

@@ -15,6 +15,7 @@ local M = {}
 --- @field cell_gap integer number of blank virtual lines to place in between cells
 --- @field write_output boolean set to false to prevent cell output from being written to the file
 --- @field new_cell_cmd string an Ex cmd to run after creating a new cell
+--- @field image_warn_threshold integer how many images will cause opening them to require confirmation
 --- @field debug boolean debug mode for development
 --- categorised option sections
 --- @field keys Notebook.Options.options.keys keybinds
@@ -70,6 +71,7 @@ M.options = {
 	cell_gap = 0,
 	write_output = true,
 	new_cell_cmd = "normal! A\nstartinsert!",
+	image_warn_threshold = 10,
 	debug = false,
 
 	keys = {
