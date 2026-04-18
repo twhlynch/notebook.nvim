@@ -13,6 +13,7 @@ local M = {}
 --- @field custom_plot_theme boolean whether to use a custom theme for matplotlib
 --- @field custom_theme_colors string[] list of hex colors to use for matplotlib cycler
 --- @field cell_gap integer number of blank virtual lines to place in between cells
+--- @field write_output boolean set to false to prevent cell output from being written to the file
 --- @field debug boolean debug mode for development
 --- categorised option sections
 --- @field keys Notebook.Options.options.keys keybinds
@@ -66,6 +67,7 @@ M.options = {
 	custom_plot_theme = true,
 	custom_theme_colors = { '#4878CF', '#6ACC65', '#D65F5F', '#B47CC7', '#C4AD66', '#77BEDB' },
 	cell_gap = 0,
+	write_output = true,
 	debug = false,
 
 	keys = {

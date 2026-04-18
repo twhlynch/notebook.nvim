@@ -415,6 +415,8 @@ end
 --- save the ipynb file
 --- @param state Notebook.Sessions.session
 function M.save(state)
+	local options = require("notebook.options").get()
+
 	-- get the current cell contents
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
@@ -438,11 +440,14 @@ function M.save(state)
 		end
 
 		-- cell outputs with type
-		local cell_outputs = state.output_store[i] or {}
 		local clean_outputs = {}
-		for _, out in ipairs(cell_outputs) do
-			if out.output_type then
-				table.insert(clean_outputs, out)
+
+		if options.write_output then
+			local cell_outputs = state.output_store[i] or {}
+			for _, out in ipairs(cell_outputs) do
+				if out.output_type then
+					table.insert(clean_outputs, out)
+				end
 			end
 		end
 

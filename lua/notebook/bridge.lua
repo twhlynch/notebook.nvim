@@ -11,6 +11,8 @@ function M.stdout_callback(state, data)
 		return
 	end
 
+	local options = require("notebook.options").get()
+
 	local raw_data = table.concat(data, "\n")
 	state.read_buffer = state.read_buffer .. raw_data
 
@@ -63,7 +65,9 @@ function M.stdout_callback(state, data)
 			end
 
 			-- output counts as a file change
-			vim.bo[state.bufnr].modified = true
+			if options.write_output then
+				vim.bo[state.bufnr].modified = true
+			end
 		end
 	end
 
