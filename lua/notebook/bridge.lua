@@ -46,6 +46,8 @@ function M.stdout_callback(state, data)
 					table.insert(state.output_store[idx], {
 						output_type = "error",
 						traceback = msg.content.traceback,
+						ename = msg.content.ename,
+						evalue = msg.content.evalue,
 					})
 				elseif msg.type == "status" and msg.content.execution_state == "idle" then
 					state.output_store[idx].executed = true
