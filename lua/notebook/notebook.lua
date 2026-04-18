@@ -419,6 +419,7 @@ function M.save(state)
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
 
+	--- @type Notebook.Jupyter.Cell[]
 	local json_cells = {}
 	for i, cell in ipairs(cells) do
 		local source_lines = utils.table_or_str_lines(cell.source)
@@ -446,9 +447,10 @@ function M.save(state)
 		end
 
 		-- append cell info with content
+		--- @type Notebook.Jupyter.Cell
 		local cell_data = {
 			cell_type = cell.type,
-			metadata = cell.metadata or vim.empty_dict(),
+			metadata = vim.empty_dict(),
 			source = formatted_src,
 			id = tostring(i - 1),
 		}

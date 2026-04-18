@@ -8,13 +8,14 @@ local M = {}
 --- @field path string | nil .ipynb file path
 --- @field raw_json Notebook.Jupyter.Notebook raw notebook data
 --- @field job_id integer | nil client job id
---- @field parsed_cells table[] parsed cell data
+--- @field parsed_cells Notebook.Sessions.Cell[] parsed cell data
 --- @field output_store Notebook.Sessions.Output[] cell output data
 --- @field snacks_images table<integer, snacks.image.Placement> image instances
 --- @field read_buffer string buffer for reading chunked bridge output
 
---- @class Notebook.Sessions.Output
---- @field data Notebook.Jupyter.DisplayData
+--- @alias Notebook.Sessions.Output Notebook.Jupyter.Output | Notebook.Sessions.Output.extras
+
+--- @class Notebook.Sessions.Output.extras
 --- @field executed boolean
 --- @field running boolean
 --- @field is_truncated boolean

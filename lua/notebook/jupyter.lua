@@ -10,21 +10,34 @@
 
 --- @class Notebook.Jupyter.Cell
 --- @field cell_type Notebook.Jupyter.CellType
---- @field execution_count integer | nil required field but will be set to Vim.NIL
+--- @field execution_count integer | vim.NIL
 --- @field id string
 --- @field metadata Notebook.Jupyter.CellMetadata
 --- @field outputs Notebook.Jupyter.Output[]
 --- @field source string[]
 
---- @class Notebook.Jupyter.Output
---- @field output_type "stream" | "error" | "display_data" | "execute_result"
---- @field text? string | string[]
---- @field traceback? string | string[]
---- @field data? Notebook.Jupyter.DisplayData
---- @field ename? string
---- @field evalue? string
---- @field execution_count? integer
---- @field metadata? table
+--- @alias Notebook.Jupyter.Output Notebook.Jupyter.Output.stream | Notebook.Jupyter.Output.error | Notebook.Jupyter.Output.display_data | Notebook.Jupyter.Output.execute_result
+
+--- @class Notebook.Jupyter.Output.stream
+--- @field output_type "stream"
+--- @field name "stdout" | "stderr"
+--- @field text string[]
+
+--- @class Notebook.Jupyter.Output.error
+--- @field ename string
+--- @field evalue string
+--- @field traceback string[]
+
+--- @class Notebook.Jupyter.Output.display_data
+--- @field output_type "display_data"
+--- @field execution_count integer
+--- @field data Notebook.Jupyter.DisplayData
+--- @field metadata table
+
+--- @class Notebook.Jupyter.Output.execute_result
+--- @field output_type "execute_result"
+--- @field data Notebook.Jupyter.DisplayData
+--- @field metadata table
 
 --- @class Notebook.Jupyter.DisplayData
 --- @field ['text/plain']? string
