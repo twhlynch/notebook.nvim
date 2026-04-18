@@ -33,12 +33,14 @@ function M.stdout_callback(state, data)
 				if msg.type == "stream" then
 					table.insert(state.output_store[idx], {
 						output_type = "stream",
+						name = "stdout",
 						text = msg.content.text,
 					})
 				elseif msg.type == "display_data" or msg.type == "execute_result" then
 					table.insert(state.output_store[idx], {
 						output_type = msg.type,
 						data = msg.content.data,
+						metadata = vim.empty_dict(),
 					})
 				elseif msg.type == "error" then
 					table.insert(state.output_store[idx], {
