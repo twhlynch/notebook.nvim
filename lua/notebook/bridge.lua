@@ -36,11 +36,18 @@ function M.stdout_callback(state, data)
 						name = "stdout",
 						text = msg.content.text,
 					})
-				elseif msg.type == "display_data" or msg.type == "execute_result" then
+				elseif msg.type == "display_data" then
 					table.insert(state.output_store[idx], {
-						output_type = msg.type,
+						output_type = "display_data",
 						data = msg.content.data,
 						metadata = vim.empty_dict(),
+					})
+				elseif msg.type == "execute_result" then
+					table.insert(state.output_store[idx], {
+						output_type = "execute_result",
+						data = msg.content.data,
+						metadata = vim.empty_dict(),
+						execution_count = 1,
 					})
 				elseif msg.type == "error" then
 					table.insert(state.output_store[idx], {
