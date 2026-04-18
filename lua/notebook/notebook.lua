@@ -592,6 +592,24 @@ function M.rerender(state)
 	renderer.render(state)
 end
 
+--- count the images in all cell outputs
+--- @param state Notebook.Sessions.session
+--- @return integer
+function M.count_images(state)
+	local count = 0
+
+	for _, cell_outputs in pairs(state.output_store or {}) do
+		for _, out in ipairs(cell_outputs) do
+			local has_image_data = out.data and (out.data["image/png"] or out.data["image/jpeg"])
+			if has_image_data then
+				count = count + 1
+			end
+		end
+	end
+
+	return count
+end
+
 --- save all images to `/figures`
 --- @param state Notebook.Sessions.session
 function M.dump_images(state)
@@ -609,15 +627,7 @@ function M.dump_images(state)
 	end
 
 	-- count images to format with right amount of leading zeros
-	local figure_count = 0
-	for _, cell_outputs in pairs(state.output_store or {}) do
-		for _, out in ipairs(cell_outputs) do
-			local has_image_data = out.data and (out.data["image/png"] or out.data["image/jpeg"])
-			if has_image_data then
-				figure_count = figure_count + 1
-			end
-		end
-	end
+	local figure_count = M.count_images(state)
 
 	-- at least one leading zero
 	local padding = math.max(#tostring(figure_count), 2)
