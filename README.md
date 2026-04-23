@@ -24,7 +24,7 @@ return {
 
 ```lua
 return {
-	"twhlynch/notebook.nvim"
+	"twhlynch/notebook.nvim",
 	opts = {
 		keybind_prefix = "<leader>c",
 		max_output_lines = 10,
