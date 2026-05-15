@@ -497,7 +497,7 @@ function M.gx_handler(state)
 
 	local image_count = M.count_images(state)
 	if image_count >= options.image_warn_threshold then
-		local prompt = string.format(constants.strings.images_warning, image_count)
+		local prompt = string.format(constants.notify.images_warning, image_count)
 		local choice = vim.fn.confirm(prompt, "&No\n&Yes", 1)
 		if choice ~= 2 then
 			return
@@ -868,7 +868,7 @@ end
 --- save all images to `/figures`
 --- @param state Notebook.Sessions.session
 function M.dump_images(state)
-	local choice = vim.fn.confirm(constants.strings.images_prompt, "&No\n&Yes", 1)
+	local choice = vim.fn.confirm(constants.notify.images_prompt, "&No\n&Yes", 1)
 	if choice ~= 2 then
 		return
 	end
@@ -904,7 +904,7 @@ function M.dump_images(state)
 		end
 	end
 
-	vim.notify(vim.fn.printf(constants.strings.saved_images, figure_index - 1))
+	vim.notify(vim.fn.printf(constants.notify.saved_images, figure_index - 1))
 end
 
 --- format the current cell by piping its source through a command
@@ -978,8 +978,7 @@ end
 --- setup a file
 --- @param args vim.api.keyset.create_autocmd.callback_args
 function M.setup_file(args)
-	local options = require("notebook.options").get()
-	local bufnr = vim.api.nvim_get_current_buf()
+	local bufnr = args.buf
 	local state = sessions.get_state(bufnr)
 
 	-- set state file
@@ -1004,42 +1003,7 @@ function M.setup_file(args)
 
 	M.rerender(state)
 
-	-- keybinds
-	local keymap = function(modes, leader, name, func, ...)
-		local vargs = { ... }
-		local key = options.keys[name]
-		local desc = constants.strings[name .. "_desc"]
-		vim.keymap.set(modes, (leader and options.keybind_prefix or "") .. key, function()
-			func(state, unpack(vargs))
-		end, { buf = bufnr, silent = true, desc = desc })
-	end
-
-	-- stylua: ignore start
-	keymap({ "n" },      true,  "run_cell",           M.run_cells, "current"    ) -- running
-	keymap({ "n" },      true,  "run_cells_all",      M.run_cells, "all"        )
-	keymap({ "n" },      true,  "run_cells_up",       M.run_cells, "up"         )
-	keymap({ "n" },      true,  "run_cells_down",     M.run_cells, "down"       )
-	keymap({ "n" },      true,  "run_then_next",      M.run_then_next           )
-	keymap({ "n" },      true,  "clear_all_output",   M.clear_output            ) -- output
-	keymap({ "n" },      true,  "refresh_all_output", M.rerender                )
-	keymap({ "n" },      false, "open_image",         M.gx_handler              ) -- viewing
-	keymap({ "n" },      false, "show_output",        M.open_output             )
-	keymap({ "n" },      false, "next_cell",          M.jump_cell, true         ) -- navigation
-	keymap({ "n" },      false, "previous_cell",      M.jump_cell, false        )
-	keymap({ "o", "x" }, false, "textobject_cell",    M.select_cell             )
-	keymap({ "n" },      true,  "go_to_running_cell", M.go_to_running_cell      )
-	keymap({ "n" },      true,  "insert_markdown",    M.insert_cell, "markdown" ) -- editing cells
-	keymap({ "n" },      true,  "insert_code",        M.insert_cell, "code"     )
-	keymap({ "n" },      true,  "output_to_md",       M.output_to_markdown      )
-	keymap({ "n" },      true,  "output_to_md_all",   M.output_to_markdown_all  )
-	keymap({ "n" },      true,  "remove_cell",        M.remove_cell             )
-	keymap({ "n" },      true,  "toggle_cell_type",   M.toggle_cell_type        )
-	keymap({ "n" },      true,  "split_cell",         M.split_cell              )
-	keymap({ "n" },      true,  "move_cell_up",       M.move_cell, "up"         )
-	keymap({ "n" },      true,  "move_cell_down",     M.move_cell, "down"       )
-	keymap({ "n" },      true,  "dump_images",        M.dump_images             ) -- utils
-	keymap({ "n" },      true,  "format_cell",        M.format_cell             )
-	-- stylua: ignore end
+	require("notebook.keymaps").setup_keymaps(bufnr)
 
 	-- override :w with custom save
 	vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {

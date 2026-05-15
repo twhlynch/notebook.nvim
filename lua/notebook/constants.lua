@@ -1,12 +1,6 @@
---- @class Notebook.Constants constants module
---- @field strings table<string, string>
-
---- @type Notebook.Constants
-local M = {
-	-- stylua: ignore
-	strings = {
-		-- notifications
-
+-- stylua: ignore
+return {
+	notify = {
 		bridge_error    = "Jupyter Bridge Error: ",
 		install_prompt  = "Missing 'jupyter_client'. Install with pip?",
 		no_client       = "Not running client",
@@ -17,35 +11,5 @@ local M = {
 		saved_images    = "Saved %d images",
 		images_prompt   = "Dump images to working directory?",
 		images_warning  = "Are you sure you want to open %d images?",
-
-		-- keybind descriptions
-		-- NOTE: these keys should match the keybind keys in ./options.lua
-
-		run_cell_desc           = "Run current cell",
-		run_cells_all_desc      = "Run all cells",
-		run_cells_up_desc       = "Run all cells above",
-		run_cells_down_desc     = "Run all cells below",
-		run_then_next           = "Run current cell and jump to next cell",
-		next_cell_desc          = "Next cell",
-		previous_cell_desc      = "Prev cell",
-		insert_markdown_desc    = "Insert markdown cell below",
-		insert_code_desc        = "Insert code cell below",
-		output_to_md_desc       = "Convert output to markdown cell",
-		output_to_md_all_desc   = "Convert all outputs to markdown cells",
-		split_cell_desc         = "Split current cell",
-		remove_cell_desc        = "Remove current cell",
-		move_cell_up_desc       = "Move cell up",
-		move_cell_down_desc     = "Move cell down",
-		clear_all_output_desc   = "Clear all cell output",
-		refresh_all_output_desc = "Rerender output",
-		open_image_desc         = "Open current cell images",
-		show_output_desc        = "Open current cell output",
-		dump_images_desc        = "Dump all image output to /figures",
-		format_cell_desc        = "Format current cell",
-		textobject_cell_desc    = "inside cell",
-		toggle_cell_type_desc   = "Toggle cell type",
-		go_to_running_cell_desc = "Go to running cell",
 	},
 }
-
-return M

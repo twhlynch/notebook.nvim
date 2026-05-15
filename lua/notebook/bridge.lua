@@ -102,27 +102,27 @@ function M.stderr_callback(_, data)
 		return
 	end
 	vim.schedule(function()
-		vim.notify(constants.strings.bridge_error .. table.concat(data, "\n"), vim.log.levels.ERROR)
+		vim.notify(constants.notify.bridge_error .. table.concat(data, "\n"), vim.log.levels.ERROR)
 	end)
 end
 
 --- prompt installing jupyter
 --- @param python string path to python executable
 function M.prompt_install(python)
-	local choice = vim.fn.confirm(constants.strings.install_prompt, "&No\n&Yes", 1)
+	local choice = vim.fn.confirm(constants.notify.install_prompt, "&No\n&Yes", 1)
 	if choice ~= 2 then
-		vim.notify(constants.strings.no_client, vim.log.levels.WARN)
+		vim.notify(constants.notify.no_client, vim.log.levels.WARN)
 		return
 	end
 
-	vim.notify(constants.strings.installing, vim.log.levels.INFO)
+	vim.notify(constants.notify.installing, vim.log.levels.INFO)
 	local install_cmd = { python, "-m", "pip", "install", "jupyter_client", "ipykernel" }
 	vim.fn.jobstart(install_cmd, {
 		on_exit = function(_, code)
 			if code == 0 then
-				vim.notify(constants.strings.install_success, vim.log.levels.INFO)
+				vim.notify(constants.notify.install_success, vim.log.levels.INFO)
 			else
-				vim.notify(constants.strings.install_fail, vim.log.levels.ERROR)
+				vim.notify(constants.notify.install_fail, vim.log.levels.ERROR)
 			end
 		end,
 	})
@@ -148,7 +148,7 @@ function M.start_client(state)
 	if cmd == "python3" then
 		local path = vim.fn.system({ "which", cmd })
 		if not (path:match("%.venv")) then
-			vim.notify(constants.strings.no_venv, vim.log.levels.WARN)
+			vim.notify(constants.notify.no_venv, vim.log.levels.WARN)
 		end
 	end
 
