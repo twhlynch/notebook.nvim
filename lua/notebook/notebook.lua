@@ -468,7 +468,7 @@ function M.gx_handler(state)
 		return
 	end
 
-	local image_count = M.count_images(state)
+	local image_count = M.count_images(state, cell_idx)
 	if image_count >= options.image_warn_threshold then
 		local prompt = string.format(constants.notify.images_warning, image_count)
 		local choice = vim.fn.confirm(prompt, "&No\n&Yes", 1)
@@ -805,15 +805,18 @@ end
 
 --- count the images in all cell outputs
 --- @param state Notebook.Sessions.session
+--- @param idx integer | nil optional cell index to count instead of all
 --- @return integer
-function M.count_images(state)
+function M.count_images(state, idx)
 	local count = 0
 
-	for _, cell_outputs in pairs(state.output_store or {}) do
-		for _, out in ipairs(cell_outputs) do
-			local has_image_data = out.data and (out.data["image/png"] or out.data["image/jpeg"])
-			if has_image_data then
-				count = count + 1
+	for i, cell_outputs in pairs(state.output_store or {}) do
+		if not idx or idx == i then
+			for _, out in ipairs(cell_outputs) do
+				local has_image_data = out.data and (out.data["image/png"] or out.data["image/jpeg"])
+				if has_image_data then
+					count = count + 1
+				end
 			end
 		end
 	end
