@@ -808,6 +808,38 @@ function M.run_cells(state, mode)
 	bridge.run_cells(state, indices)
 end
 
+--- run current cell, then jump to next cell
+--- @param state Notebook.Sessions.session
+function M.run_then_next(state)
+	M.run_cells(state, "current")
+
+	local idx = M.get_current_cell_index(state)
+
+	-- first line returns 0
+	if idx == 0 then
+		idx = 1
+	end
+
+	if not idx then
+		return
+	end
+
+	local target = idx + 1
+	while target <= #state.parsed_cells do
+		local cell = state.parsed_cells[target]
+		if not cell then
+			return
+		end
+
+		if cell.type == "code" then
+			vim.api.nvim_win_set_cursor(0, { cell.start_line + 1, 0 })
+			return
+		end
+
+		target = target + 1
+	end
+end
+
 --- reparse the buffer cells and rerender
 --- @param state Notebook.Sessions.session
 function M.rerender(state)
@@ -987,6 +1019,7 @@ function M.setup_file(args)
 	keymap({ "n" },      true,  "run_cells_all",      M.run_cells, "all"        )
 	keymap({ "n" },      true,  "run_cells_up",       M.run_cells, "up"         )
 	keymap({ "n" },      true,  "run_cells_down",     M.run_cells, "down"       )
+	keymap({ "n" },      true,  "run_then_next",      M.run_then_next           )
 	keymap({ "n" },      true,  "clear_all_output",   M.clear_output            ) -- output
 	keymap({ "n" },      true,  "refresh_all_output", M.rerender                )
 	keymap({ "n" },      false, "open_image",         M.gx_handler              ) -- viewing

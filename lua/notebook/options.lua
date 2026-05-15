@@ -33,6 +33,7 @@ local M = {}
 --- @field run_cells_all string keybind to run all cells
 --- @field run_cells_up string keybind to run all cells above and the current cell
 --- @field run_cells_down string keybind to run the current cell and all cells below
+--- @field run_then_next string keybind to run the current cell, then jump to the next cell
 --- jumping
 --- @field next_cell string keybind to jump to the next cell
 --- @field previous_cell string keybind to jump to the previous cell
@@ -101,6 +102,7 @@ M.options = {
 		run_cells_all      = "a",
 		run_cells_up       = "u",
 		run_cells_down     = "d",
+		run_then_next      = "<CR>",
 
 		next_cell          = "]c",
 		previous_cell      = "[c",

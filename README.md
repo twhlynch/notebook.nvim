@@ -45,6 +45,7 @@ return {
 			run_cells_all      = "a",
 			run_cells_up       = "u",
 			run_cells_down     = "d",
+			run_then_next      = "<CR>",
 
 			next_cell          = "]c",
 			previous_cell      = "[c",

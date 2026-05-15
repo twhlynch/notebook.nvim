@@ -25,6 +25,7 @@ local M = {
 		run_cells_all_desc      = "Run all cells",
 		run_cells_up_desc       = "Run all cells above",
 		run_cells_down_desc     = "Run all cells below",
+		run_then_next           = "Run current cell and jump to next cell",
 		next_cell_desc          = "Next cell",
 		previous_cell_desc      = "Prev cell",
 		insert_markdown_desc    = "Insert markdown cell below",
