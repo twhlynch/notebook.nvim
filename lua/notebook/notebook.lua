@@ -50,17 +50,19 @@ end
 
 --- get the index of the cell containing the cursor
 --- @param state Notebook.Sessions.session
+--- @param zero_first_line boolean | nil offset the first line to idx 0
 --- @return integer | nil
-function M.get_current_cell_index(state)
+function M.get_current_cell_index(state, zero_first_line)
+	M.parse_buffer(state)
+
 	local cursor_line = vim.api.nvim_win_get_cursor(0)[1] - 1
 
-	-- top line will get above
 	if cursor_line == 0 then
-		return 0
+		if zero_first_line then
+			return 0
+		end
+		cursor_line = 1
 	end
-
-	-- ensure parsed cells are up to date
-	M.parse_buffer(state)
 
 	for i, c in ipairs(state.parsed_cells) do
 		if cursor_line >= c.start_line and cursor_line <= (c.end_line + 1) then
@@ -78,7 +80,7 @@ function M.insert_cell(state, cell_type)
 	local options = require("notebook.options").get()
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
-	local current_idx = M.get_current_cell_index(state) or #cells
+	local current_idx = M.get_current_cell_index(state, true) or #cells
 
 	-- new blank cell
 	local source = cell_type == "code" and options.strings.new_code_cell or options.strings.new_cell
@@ -138,11 +140,6 @@ function M.output_to_markdown(state)
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
 	local cell_idx = M.get_current_cell_index(state)
-
-	if cell_idx == 0 then
-		cell_idx = 1
-	end
-
 	if not cell_idx then
 		return
 	end
@@ -216,11 +213,6 @@ function M.toggle_cell_type(state)
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
 	local idx = M.get_current_cell_index(state)
-
-	if idx == 0 then
-		idx = 1
-	end
-
 	if not idx then
 		return
 	end
@@ -250,12 +242,6 @@ function M.remove_cell(state)
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
 	local current_idx = M.get_current_cell_index(state)
-
-	-- first line returns 0
-	if current_idx == 0 then
-		current_idx = 1
-	end
-
 	if not current_idx then
 		return
 	end
@@ -291,10 +277,6 @@ function M.split_cell(state)
 	local cells = state.parsed_cells
 
 	local idx = M.get_current_cell_index(state)
-	-- first line returns 0
-	if idx == 0 then
-		idx = 1
-	end
 	if not idx then
 		return
 	end
@@ -370,11 +352,6 @@ function M.move_cell(state, direction)
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
 	local current_idx = M.get_current_cell_index(state)
-
-	if current_idx == 0 then
-		current_idx = 1
-	end
-
 	if not current_idx then
 		return
 	end
@@ -414,10 +391,8 @@ end
 function M.open_output(state)
 	-- get cell containing cursor
 	local cell_idx = M.get_current_cell_index(state)
-
-	-- first line returns 0
-	if cell_idx == 0 then
-		cell_idx = 1
+	if not cell_idx then
+		return
 	end
 
 	-- check it has output
@@ -489,10 +464,8 @@ function M.gx_handler(state)
 
 	-- get cell containing cursor
 	local cell_idx = M.get_current_cell_index(state)
-
-	-- first line returns 0
-	if cell_idx == 0 then
-		cell_idx = 1
+	if not cell_idx then
+		return
 	end
 
 	local image_count = M.count_images(state)
@@ -576,12 +549,6 @@ function M.jump_cell(state, next)
 	M.parse_buffer(state)
 
 	local idx = M.get_current_cell_index(state)
-
-	-- first line returns 0
-	if idx == 0 then
-		idx = 1
-	end
-
 	if not idx then
 		return
 	end
@@ -787,11 +754,6 @@ function M.run_cells(state, mode)
 
 	-- get current cell
 	local current_idx = M.get_current_cell_index(state)
-
-	if current_idx == 0 then
-		current_idx = 1
-	end
-
 	if not current_idx and mode ~= "all" then
 		return
 	end
@@ -814,12 +776,6 @@ function M.run_then_next(state)
 	M.run_cells(state, "current")
 
 	local idx = M.get_current_cell_index(state)
-
-	-- first line returns 0
-	if idx == 0 then
-		idx = 1
-	end
-
 	if not idx then
 		return
 	end
@@ -914,11 +870,6 @@ function M.format_cell(state)
 	M.parse_buffer(state)
 	local cells = state.parsed_cells
 	local current_idx = M.get_current_cell_index(state)
-
-	if current_idx == 0 then
-		current_idx = 1
-	end
-
 	if not current_idx then
 		return
 	end
@@ -961,9 +912,8 @@ end
 --- @param state Notebook.Sessions.session
 function M.select_cell(state)
 	local current_idx = M.get_current_cell_index(state)
-
-	if current_idx == 0 then
-		current_idx = 1
+	if not current_idx then
+		return
 	end
 
 	local cell = state.parsed_cells[current_idx]
