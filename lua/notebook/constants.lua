@@ -11,5 +11,6 @@ return {
 		saved_images    = "Saved %d images",
 		images_prompt   = "Dump images to working directory?",
 		images_warning  = "Are you sure you want to open %d images?",
+		mark_not_set    = "Mark '%s' is not set",
 	},
 }

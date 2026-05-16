@@ -770,6 +770,51 @@ function M.run_cells(state, mode)
 	bridge.run_cells(state, indices)
 end
 
+--- run all cells from a vim mark downwards
+--- @param state Notebook.Sessions.session
+function M.run_from_mark(state)
+	-- get the mark char
+	local char_code = vim.fn.getchar()
+	if char_code == 27 then
+		return
+	end
+	local char = vim.fn.nr2char(char_code)
+
+	-- get mark location
+	local ok, pos = pcall(vim.api.nvim_buf_get_mark, state.bufnr, char)
+	if not ok or not pos or pos[1] == 0 then
+		vim.notify(string.format(constants.notify.mark_not_set, char), vim.log.levels.WARN)
+		return
+	end
+
+	-- get overlapping cell
+	local line = pos[1] - 1
+	M.parse_buffer(state)
+
+	local mark_idx = nil
+	for i, c in ipairs(state.parsed_cells) do
+		if line >= c.start_line and line <= (c.end_line + 1) then
+			mark_idx = i
+			break
+		end
+	end
+
+	if not mark_idx then
+		return
+	end
+
+	-- run all cells after
+	local indices = vim.fn.range(mark_idx, #state.parsed_cells)
+	local filtered = {}
+	for _, i in ipairs(indices) do
+		if not state.parsed_cells[i].disabled then
+			table.insert(filtered, i)
+		end
+	end
+
+	bridge.run_cells(state, filtered)
+end
+
 --- kill the kernel and running states
 --- @param state Notebook.Sessions.session
 function M.kill_kernel(state)

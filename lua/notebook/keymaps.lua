@@ -31,6 +31,7 @@ local descriptions = {
 	toggle_cell_type   = "Toggle cell type",
 	kill_kernel        = "Kill the jupyter kernel",
 	go_to_running_cell = "Go to running cell",
+	run_from_mark      = "Run all cells from a mark downwards",
 }
 
 --- @param bufnr integer
@@ -75,6 +76,7 @@ function M.setup_keymaps(bufnr)
 	keymap({ "n" },      true,  "move_cell_down",     nb.move_cell, "down"       )
 	keymap({ "n" },      true,  "dump_images",        nb.dump_images             ) -- utils
 	keymap({ "n" },      true,  "format_cell",        nb.format_cell             )
+	keymap({ "n" },      true,  "run_from_mark",      nb.run_from_mark           )
 	-- stylua: ignore end
 end
 

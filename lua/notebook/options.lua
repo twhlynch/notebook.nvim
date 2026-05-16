@@ -34,6 +34,7 @@ local M = {}
 --- @field run_cells_up string keybind to run all cells above and the current cell
 --- @field run_cells_down string keybind to run the current cell and all cells below
 --- @field run_then_next string keybind to run the current cell, then jump to the next cell
+--- @field run_from_mark string keybind to run all cells from a vim mark
 --- jumping
 --- @field next_cell string keybind to jump to the next cell
 --- @field previous_cell string keybind to jump to the previous cell
@@ -125,6 +126,7 @@ M.options = {
 
 		kill_kernel        = "K",
 		go_to_running_cell = "g",
+		run_from_mark      = "'",
 		open_image         = "gx",
 		show_output        = "<CR>",
 		dump_images        = "D",
