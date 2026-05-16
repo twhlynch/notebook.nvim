@@ -29,6 +29,7 @@ local descriptions = {
 	format_cell        = "Format current cell",
 	textobject_cell    = "inside cell",
 	toggle_cell_type   = "Toggle cell type",
+	kill_kernel        = "Kill the jupyter kernel",
 	go_to_running_cell = "Go to running cell",
 }
 
@@ -61,6 +62,7 @@ function M.setup_keymaps(bufnr)
 	keymap({ "n" },      false, "next_cell",          nb.jump_cell, true         ) -- navigation
 	keymap({ "n" },      false, "previous_cell",      nb.jump_cell, false        )
 	keymap({ "o", "x" }, false, "textobject_cell",    nb.select_cell             )
+	keymap({ "n" },      true,  "kill_kernel",        nb.kill_kernel             )
 	keymap({ "n" },      true,  "go_to_running_cell", nb.go_to_running_cell      )
 	keymap({ "n" },      true,  "insert_markdown",    nb.insert_cell, "markdown" ) -- editing cells
 	keymap({ "n" },      true,  "insert_code",        nb.insert_cell, "code"     )

@@ -770,6 +770,23 @@ function M.run_cells(state, mode)
 	bridge.run_cells(state, indices)
 end
 
+--- kill the kernel and running states
+--- @param state Notebook.Sessions.session
+function M.kill_kernel(state)
+	if state.job_id then
+		vim.fn.jobstop(state.job_id)
+		state.job_id = nil
+	end
+
+	state.execution_queue = {}
+	for _, output in ipairs(state.output_store) do
+		output.running = false
+		output.queued = false
+	end
+
+	M.rerender(state)
+end
+
 --- run current cell, then jump to next cell
 --- @param state Notebook.Sessions.session
 function M.run_then_next(state)

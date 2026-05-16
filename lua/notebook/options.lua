@@ -39,6 +39,7 @@ local M = {}
 --- @field previous_cell string keybind to jump to the previous cell
 --- @field textobject_cell string textobject keybind for 'inside cell'
 --- @field go_to_running_cell string keybind to go to the running cell
+--- @field kill_kernel string keybind to kill the jupyter kernel
 --- adding cells
 --- @field insert_markdown string keybind to insert a markdown cell under the current cell
 --- @field insert_code string keybind to insert a code cell under the current cell
@@ -122,6 +123,7 @@ M.options = {
 		format_cell        = "f",
 		toggle_cell_type   = "S",
 
+		kill_kernel        = "K",
 		go_to_running_cell = "g",
 		open_image         = "gx",
 		show_output        = "<CR>",
