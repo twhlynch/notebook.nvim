@@ -39,6 +39,7 @@ return {
 		override_conform = true,
 		show_elapsed_time = true,
 		elapsed_timer_interval = 1000,
+		file_patterns = { "*.nb.py" },
 
 		keys = {
 			run_cell           = "r",
@@ -119,6 +120,13 @@ conform.setup({
 	},
 })
 ```
+
+</details>
+
+<details><summary>`.py` notebooks</summary>
+
+You can use Python files as notebooks by naming them `*.nb.py`. The file
+format mirrors the transient buffer, saving cell formatting characters as comments.
 
 </details>
 

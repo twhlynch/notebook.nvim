@@ -18,6 +18,21 @@ function M.setup()
 		group = M.group,
 		callback = M.setup_file,
 	})
+
+	-- file notebook autocmd if enabled
+	local options = require("notebook.options").get()
+	if type(options.file_patterns) == "table" and #options.file_patterns ~= 0 then
+		local patterns = table.concat(options.file_patterns, ",")
+		vim.api.nvim_create_autocmd("BufReadPost", {
+			pattern = patterns,
+			group = M.group,
+			callback = function(args)
+				if not sessions.is_session(args.buf) then
+					M.setup_file_notebook(args)
+				end
+			end,
+		})
+	end
 end
 
 --- sync all """ and # """ delimiters after a cell change
@@ -607,6 +622,17 @@ end
 --- save the ipynb file
 --- @param state Notebook.Sessions.session
 function M.save(state)
+	if state.is_file_notebook then
+		local lines = vim.api.nvim_buf_get_lines(state.bufnr, 0, -1, false)
+		local success = utils.write_file(table.concat(lines, "\n"), state.path)
+
+		if success then
+			vim.bo[state.bufnr].modified = false
+		end
+
+		return
+	end
+
 	local options = require("notebook.options").get()
 
 	-- get the current cell contents
@@ -990,31 +1016,19 @@ function M.select_cell(state)
 	vim.cmd("normal! gv")
 end
 
---- setup a file
---- @param args vim.api.keyset.create_autocmd.callback_args
-function M.setup_file(args)
-	local bufnr = args.buf
-	local state = sessions.get_state(bufnr)
-
-	-- set state file
-	state.path = args.file
+--- notebook setup excluding reading
+--- @param state Notebook.Sessions.session
+function M.setup_notebook_environment(state)
+	local bufnr = state.bufnr
 
 	-- use hl overrides
 	renderer.apply_highlights(vim.api.nvim_get_current_win())
 
-	-- read file content
-	if vim.uv.fs_stat(state.path) ~= nil then
-		M.read_file(state)
-		M.parse_buffer(state)
-	else
-		state.raw_json = jupyter.blank_notebook()
-	end
-
 	-- buffer options
-	vim.bo[state.bufnr].modified = false
-	vim.bo[state.bufnr].filetype = "python"
-	vim.bo[state.bufnr].buftype = ""
-	vim.bo[state.bufnr].modifiable = true
+	vim.bo[bufnr].modified = false
+	vim.bo[bufnr].filetype = "python"
+	vim.bo[bufnr].buftype = ""
+	vim.bo[bufnr].modifiable = true
 
 	M.rerender(state)
 
@@ -1054,9 +1068,46 @@ function M.setup_file(args)
 			M.rerender(state)
 		end,
 	})
+end
+
+--- setup a .ipynb file
+--- @param args vim.api.keyset.create_autocmd.callback_args
+function M.setup_file(args)
+	local bufnr = args.buf
+	local state = sessions.get_state(bufnr)
+
+	-- set state file
+	state.path = args.file
+
+	-- read file content
+	if vim.uv.fs_stat(state.path) ~= nil then
+		M.read_file(state)
+		M.parse_buffer(state)
+	else
+		state.raw_json = jupyter.blank_notebook()
+	end
+
+	M.setup_notebook_environment(state)
 
 	-- trigger autocommands
 	vim.api.nvim_exec_autocmds("BufReadPost", { buffer = bufnr })
+	vim.api.nvim_exec_autocmds("BufWinEnter", { buffer = bufnr })
+end
+
+--- setup a .py file as a file notebook
+--- @param args vim.api.keyset.create_autocmd.callback_args
+function M.setup_file_notebook(args)
+	local bufnr = args.buf
+	local state = sessions.get_state(bufnr)
+
+	state.path = args.file
+	state.is_file_notebook = true
+
+	-- parse existing buffer content into cells
+	M.parse_buffer(state)
+
+	M.setup_notebook_environment(state)
+
 	vim.api.nvim_exec_autocmds("BufWinEnter", { buffer = bufnr })
 end
 
