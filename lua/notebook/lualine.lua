@@ -19,7 +19,7 @@ function M.section()
 
 	local states = {}
 	for j, i in ipairs(code_cells) do
-		local output = state.output_store[i]
+		local output = state.output_store[i] or {}
 		if output.running then
 			states[j] = { "DiagnosticHint", "╋" }
 		elseif output.queued then
