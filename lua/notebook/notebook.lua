@@ -33,6 +33,14 @@ function M.setup()
 			end,
 		})
 	end
+
+	-- user commands
+	vim.api.nvim_create_user_command("NotebookStart", function()
+		M.start_notebook()
+	end, {})
+	vim.api.nvim_create_user_command("NotebookStop", function()
+		M.stop_notebook()
+	end, {})
 end
 
 --- sync all """ and # """ delimiters after a cell change
@@ -1109,6 +1117,72 @@ function M.setup_file_notebook(args)
 	M.setup_notebook_environment(state)
 
 	vim.api.nvim_exec_autocmds("BufWinEnter", { buffer = bufnr })
+end
+
+--- start a .py file notebook session
+function M.start_notebook()
+	local bufnr = vim.api.nvim_get_current_buf()
+
+	if sessions.is_session(bufnr) then
+		return
+	end
+
+	local state = sessions.get_state(bufnr)
+	state.path = vim.api.nvim_buf_get_name(bufnr)
+	state.is_file_notebook = true
+
+	M.parse_buffer(state)
+
+	M.setup_notebook_environment(state)
+end
+
+--- stop a .py file notebook session
+function M.stop_notebook()
+	local bufnr = vim.api.nvim_get_current_buf()
+	if not sessions.is_session(bufnr) then
+		return
+	end
+
+	local state = sessions.get_state(bufnr)
+	if not state.is_file_notebook then
+		return
+	end
+
+	-- kill kernel without rerender
+	if state.job_id then
+		vim.fn.jobstop(state.job_id)
+		state.job_id = nil
+	end
+	state.execution_queue = {}
+	for _, output in ipairs(state.output_store) do
+		output.running = false
+		output.queued = false
+	end
+
+	-- stop elapsed timer
+	renderer.stop_elapsed_timer()
+
+	-- cancel pending render
+	if utils.render_timer then
+		utils.render_timer:stop()
+	end
+
+	-- remove buffer autocmds
+	vim.api.nvim_clear_autocmds({ group = M.group, buffer = bufnr })
+
+	-- clear extmarks and images
+	renderer.clear(state)
+
+	-- wipe state data
+	state.parsed_cells = {}
+	state.output_store = {}
+	state.snacks_images = {}
+
+	-- clear keybinds
+	require("notebook.keymaps").reset(bufnr)
+
+	-- remove session
+	sessions.sessions[bufnr] = nil
 end
 
 return M

@@ -161,6 +161,14 @@ function M.stop_elapsed_timer()
 	M._elapsed_state = nil
 end
 
+--- clear everything
+function M.clear(state)
+	M.clear_all_images(state)
+	M.clear_namespace(state.bufnr, M.output_ns)
+	M.clear_namespace(state.bufnr, M.border_ns)
+	M.clear_namespace(state.bufnr, M.hl_ns)
+end
+
 --- remove cells images from the UI
 --- @param state Notebook.Sessions.session
 --- @param index integer cell id

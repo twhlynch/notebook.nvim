@@ -80,4 +80,16 @@ function M.setup_keymaps(bufnr)
 	-- stylua: ignore end
 end
 
+--- @param bufnr integer
+function M.reset(bufnr)
+	local options = require("notebook.options").get()
+
+	for _, key in pairs(options.keys) do
+		for _, mode in ipairs({ "n", "o", "x" }) do
+			pcall(vim.keymap.del, mode, key, { buffer = bufnr })
+			pcall(vim.keymap.del, mode, options.keybind_prefix .. key, { buffer = bufnr })
+		end
+	end
+end
+
 return M

@@ -125,7 +125,7 @@ conform.setup({
 
 <details><summary>`.py` notebooks</summary>
 
-You can use Python files as notebooks by naming them `*.nb.py`. The file
+You can use Python files as notebooks by naming them `*.nb.py` or with `:NotebookStart` and `:NotebookStop`. The file
 format mirrors the transient buffer, saving cell formatting characters as comments.
 
 </details>
