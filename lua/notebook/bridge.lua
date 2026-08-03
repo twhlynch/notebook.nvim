@@ -76,11 +76,11 @@ function M.stdout_callback(state, data)
 						state.output_store[next_idx].start_time = vim.uv.now()
 					end
 				end
-			end
 
-			-- output counts as a file change
-			if options.write_output and not state.is_file_notebook then
-				vim.bo[state.bufnr].modified = true
+				-- output counts as a file change
+				if options.write_output and not state.is_file_notebook then
+					vim.bo[state.bufnr].modified = true
+				end
 			end
 		end
 	end
