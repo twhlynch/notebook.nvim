@@ -303,7 +303,7 @@ function M.border_text(label)
 
 	if label then
 		local prefix = string.rep(options.strings.cell_border, 2) .. label
-		local count = width - #prefix
+		local count = width - vim.fn.strwidth(prefix)
 		return prefix .. string.rep(options.strings.cell_border, count)
 	else
 		return string.rep(options.strings.cell_border, width)
