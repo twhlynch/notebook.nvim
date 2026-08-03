@@ -1029,6 +1029,9 @@ end
 function M.setup_notebook_environment(state)
 	local bufnr = state.bufnr
 
+	-- clear any stale buffer autocmds before setup
+	vim.api.nvim_clear_autocmds({ group = M.group, buffer = bufnr })
+
 	-- use hl overrides
 	renderer.apply_highlights(vim.api.nvim_get_current_win())
 
