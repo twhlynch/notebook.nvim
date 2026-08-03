@@ -63,10 +63,40 @@ function M.reset_treesitter(bufnr)
 	end
 end
 
---- apply highlights to a window
+--- window highlight namespaces that were overridden (winid -> previous ns)
+--- @type table<integer, integer>
+M._saved_ns = {}
+
+--- apply the notebook highlight namespace to a window
 --- @param window integer
 function M.apply_highlights(window)
+	if not vim.api.nvim_win_is_valid(window) or M._saved_ns[window] ~= nil then
+		return
+	end
+
+	M._saved_ns[window] = vim.api.nvim_get_hl_ns({ winid = window })
 	vim.api.nvim_win_set_hl_ns(window, M.hl_ns)
+end
+
+--- restore a windows previous highlight namespace
+--- @param window integer
+function M.restore_highlights(window)
+	if not vim.api.nvim_win_is_valid(window) or M._saved_ns[window] == nil then
+		return
+	end
+
+	vim.api.nvim_win_set_hl_ns(window, M._saved_ns[window])
+	M._saved_ns[window] = nil
+end
+
+--- restore highlights on windows currently showing a buffer
+--- @param bufnr integer
+function M.restore_highlights_for_buf(bufnr)
+	for window in pairs(M._saved_ns) do
+		if vim.api.nvim_win_get_buf(window) == bufnr then
+			M.restore_highlights(window)
+		end
+	end
 end
 
 --- format milliseconds into a readable string

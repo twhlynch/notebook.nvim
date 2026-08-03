@@ -34,6 +34,20 @@ function M.setup()
 		})
 	end
 
+	-- keep docstring highlights applied to any window showing a notebook
+	local function apply_window_highlights()
+		local window = vim.api.nvim_get_current_win()
+		if sessions.is_session(vim.api.nvim_get_current_buf()) then
+			renderer.apply_highlights(window)
+		else
+			renderer.restore_highlights(window)
+		end
+	end
+	vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+		group = M.group,
+		callback = apply_window_highlights,
+	})
+
 	-- user commands
 	vim.api.nvim_create_user_command("NotebookStart", function()
 		M.start_notebook()
@@ -1198,6 +1212,9 @@ function M.stop_notebook()
 
 	-- restore default python highlighting
 	renderer.reset_treesitter(bufnr)
+
+	-- restore window highlight namespaces
+	renderer.restore_highlights_for_buf(bufnr)
 
 	-- remove session
 	sessions.sessions[bufnr] = nil
