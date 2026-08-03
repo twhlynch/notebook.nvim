@@ -152,4 +152,20 @@ function M.write_base64_file(data, path)
 	return true
 end
 
+--- write text to a file
+--- @param text string text data
+--- @param path string file path
+--- @return boolean success
+function M.write_file(text, path)
+	local f = io.open(path, "w")
+	if not f then
+		return false
+	end
+
+	f:write(text)
+	f:close()
+
+	return true
+end
+
 return M

@@ -14,16 +14,11 @@ function M.conform_after_format()
 	conform.format = function(opts, ...)
 		format(opts, ...)
 
-		-- only notebooks
+		-- only active notebook sessions
 		local bufnr = (opts or {}).bufnr or vim.api.nvim_get_current_buf()
 		if not vim.api.nvim_buf_is_valid(bufnr) then
 			return
 		end
-		if not vim.api.nvim_buf_get_name(bufnr):find("%.ipynb$") then
-			return
-		end
-
-		-- only active sessions
 		local sessions = require("notebook.sessions")
 		if not sessions.is_session(bufnr) then
 			return

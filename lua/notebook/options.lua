@@ -22,6 +22,7 @@ local M = {}
 --- @field debug boolean debug mode for development
 --- @field show_elapsed_time boolean show elapsed time next to running/executed cells
 --- @field elapsed_timer_interval integer interval in ms for elapsed time updates
+--- @field file_patterns string[] glob patterns for .py files to treat as notebooks
 --- categorised option sections
 --- @field keys Notebook.Options.options.keys keybinds
 --- @field hl Notebook.Options.options.highlights highlight groups
@@ -97,6 +98,7 @@ M.options = {
 	override_conform = true,
 	show_elapsed_time = true,
 	elapsed_timer_interval = 1000,
+	file_patterns = { "*.nb.py" },
 	debug = false,
 
 	keys = {

@@ -79,7 +79,7 @@ function M.stdout_callback(state, data)
 			end
 
 			-- output counts as a file change
-			if options.write_output then
+			if options.write_output and not state.is_file_notebook then
 				vim.bo[state.bufnr].modified = true
 			end
 		end
