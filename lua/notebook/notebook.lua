@@ -1032,6 +1032,18 @@ function M.setup_notebook_environment(state)
 	-- use hl overrides
 	renderer.apply_highlights(vim.api.nvim_get_current_win())
 
+	-- setup treesitter with notebook injections
+	renderer.setup_treesitter(bufnr)
+
+	-- reapply notebook injections after a buffer reload
+	vim.api.nvim_create_autocmd("BufReadPost", {
+		group = M.group,
+		buffer = bufnr,
+		callback = function()
+			renderer.setup_treesitter(bufnr)
+		end,
+	})
+
 	-- buffer options
 	vim.bo[bufnr].modified = false
 	vim.bo[bufnr].filetype = "python"
@@ -1180,6 +1192,9 @@ function M.stop_notebook()
 
 	-- clear keybinds
 	require("notebook.keymaps").reset(bufnr)
+
+	-- restore default python highlighting
+	renderer.reset_treesitter(bufnr)
 
 	-- remove session
 	sessions.sessions[bufnr] = nil

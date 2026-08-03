@@ -11,11 +11,36 @@ function M.setup()
 
 	-- make docstrings white
 	vim.api.nvim_set_hl(M.hl_ns, "@string.documentation.python", { link = "Normal" })
+end
 
-	-- replace docstrings with markdown
-	-- replace magics with bash
+--- @type vim.treesitter.Query?
+local injection_query
+--- @type vim.treesitter.Query?
+local default_injection_query
+
+--- swap a buffer's python parser injection query
+--- @param bufnr integer
+--- @param query vim.treesitter.Query
+local function apply_injection_query(bufnr, query)
+	local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "python")
+	if not ok or not parser then
+		return
+	end
+
+	---@diagnostic disable-next-line: invisible
+	if parser._injection_query ~= query then
+		---@diagnostic disable-next-line: invisible
+		parser._injection_query = query
+		parser:invalidate()
+	end
+end
+
+--- use the notebook injections for a buffer's python parser
+--- @param bufnr integer
+function M.setup_treesitter(bufnr)
+	default_injection_query = default_injection_query or vim.treesitter.query.get("python", "injections")
 	-- stylua: ignore
-	vim.treesitter.query.set("python", "injections", [[
+	injection_query = injection_query or vim.treesitter.query.parse("python", [[
 		((expression_statement
 		   (string
 		     (string_content) @injection.content) @docstring)
@@ -27,6 +52,15 @@ function M.setup()
 		 (#offset! @injection.content 0 2 0 0)
 		 (#set! injection.language "bash"))
 	]])
+	apply_injection_query(bufnr, injection_query)
+end
+
+--- restore the default injections for a buffer's python parser
+--- @param bufnr integer
+function M.reset_treesitter(bufnr)
+	if default_injection_query then
+		apply_injection_query(bufnr, default_injection_query)
+	end
 end
 
 --- apply highlights to a window
