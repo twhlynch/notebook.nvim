@@ -13,6 +13,7 @@ function M.setup()
 	vim.api.nvim_set_hl(M.hl_ns, "@string.documentation.python", { link = "Normal" })
 
 	-- replace docstrings with markdown
+	-- replace magics with bash
 	-- stylua: ignore
 	vim.treesitter.query.set("python", "injections", [[
 		((expression_statement
@@ -20,6 +21,11 @@ function M.setup()
 		     (string_content) @injection.content) @docstring)
 		 (#set! injection.language "markdown")
 		 (#set! injection.combined))
+
+		((comment) @injection.content
+		 (#lua-match? @injection.content "^# %%")
+		 (#offset! @injection.content 0 2 0 0)
+		 (#set! injection.language "bash"))
 	]])
 end
 
